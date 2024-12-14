@@ -6,8 +6,8 @@ public class TaskManager {
     private ArrayList<String> pendingTasks;
     private String[] completedTasks;
     private int completedCount;
-    private static final String PENDING_FILE = "pending_tasks.txt";
-    private static final String COMPLETED_FILE = "completed_tasks.txt";
+    private static final String pendingFile = "pending_tasks.txt";
+    private static final String completedFile = "completed_tasks.txt";
 
     public TaskManager() {
         pendingTasks = loadData(PENDING_FILE);
@@ -16,7 +16,7 @@ public class TaskManager {
     }
 
     public void run() {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = ScannerXI(System.in);
         int choice;
         do {
             System.out.println("1. Add Task");
@@ -92,7 +92,7 @@ public class TaskManager {
     }
 
     private void saveData(ArrayList<String> data, String filename) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+        try (bufferedWriter writer = new bufferedWriter(new fileWriter(filename))) {
             for (String item : data) {
                 writer.write(item);
                 writer.newLine();
@@ -103,7 +103,7 @@ public class TaskManager {
     }
 
     private void saveCompletedTasks() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(COMPLETED_FILE))) {
+        try (bufferedWriter writer = new bufferedWriter(new FileWriter(COMPLETED_FILE))) {
             for (int i = 0; i < completedCount; i++) {
                 writer.write(completedTasks[i]);
                 writer.newLine();
@@ -115,7 +115,7 @@ public class TaskManager {
 
     private ArrayList<String> loadData(String filename) {
         ArrayList<String> data = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+        try (bufferedReader reader = new bufferedReader(new fileReader(filename))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 data.add(line);
