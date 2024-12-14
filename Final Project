@@ -1,0 +1,133 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class TaskManager {
+    private ArrayList<String> pendingTasks;
+    private String[] completedTasks;
+    private int completedCount;
+    private static final String PENDING_FILE = "pending_tasks.txt";
+    private static final String COMPLETED_FILE = "completed_tasks.txt";
+
+    public TaskManager() {
+        pendingTasks = loadData(PENDING_FILE);
+        completedTasks = new String[100]; // Assuming a max of 100 completed tasks
+        completedCount = 0;
+    }
+
+    public void run() {
+        Scanner scanner = new Scanner(System.in);
+        int choice;
+        do {
+            System.out.println("1. Add Task");
+            System.out.println("2. Complete Task");
+            System.out.println("3. View Pending Tasks");
+            System.out.println("4. View Completed Tasks");
+            System.out.println("5. Exit");
+            choice = getUserInput(scanner);
+
+            switch (choice) {
+                case 1:
+                    addTask(scanner);
+                    break;
+                case 2:
+                    completeTask(scanner);
+                    break;
+                case 3:
+                    viewPendingTasks();
+                    break;
+                case 4:
+                    viewCompletedTasks();
+                    break;
+                case 5:
+                    saveData(pendingTasks, PENDING_FILE);
+                    saveCompletedTasks();
+                    System.out.println("Exiting...");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Try again.");
+            }
+        } while (choice != 5);
+    }
+
+    private void addTask(Scanner scanner) {
+        System.out.print("Enter task: ");
+        String task = scanner.nextLine();
+        pendingTasks.add(task);
+    }
+
+    private void completeTask(Scanner scanner) {
+        viewPendingTasks();
+        System.out.print("Enter the index of the task to complete: ");
+        int index = getUserInput(scanner);
+        if (index >= 0 && index < pendingTasks.size()) {
+            completedTasks[completedCount++] = pendingTasks.remove(index);
+        } else {
+            System.out.println("Invalid index. Try again.");
+        }
+    }
+
+    private void viewPendingTasks() {
+        System.out.println("Pending Tasks:");
+        for (int i = 0; i < pendingTasks.size(); i++) {
+            System.out.println(i + ": " + pendingTasks.get(i));
+        }
+    }
+
+    private void viewCompletedTasks() {
+        System.out.println("Completed Tasks:");
+        for (int i = 0; i < completedCount; i++) {
+            System.out.println(i + ": " + completedTasks[i]);
+        }
+    }
+
+    private int getUserInput(Scanner scanner) {
+        while (true) {
+            try {
+                return Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter an integer.");
+            }
+        }
+    }
+
+    private void saveData(ArrayList<String> data, String filename) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+            for (String item : data) {
+                writer.write(item);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Error saving data: " + e.getMessage());
+        }
+    }
+
+    private void saveCompletedTasks() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(COMPLETED_FILE))) {
+            for (int i = 0; i < completedCount; i++) {
+                writer.write(completedTasks[i]);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Error saving completed tasks: " + e.getMessage());
+        }
+    }
+
+    private ArrayList<String> loadData(String filename) {
+        ArrayList<String> data = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                data.add(line);
+            }
+        } catch (IOException e) {
+            System.out.println("Error loading data: " + e.getMessage());
+        }
+        return data;
+    }
+
+    public static void main(String[] args) {
+        TaskManager taskManager = new TaskManager();
+        taskManager.run();
+    }
+}
